@@ -120,3 +120,21 @@ def get_module_info(name):
                     setattr(module_info, attr, item.value.s)
 
 
+_ = lambda x:x
+def l10n(modulepath, domain):
+    ''' This utility function returns the gettext.gettext method for the default locale
+    when it is available. Otherwise it returns the identity function.
+    A plugin should use it this way:
+    _ = spf.l10n()
+    '''
+    if isinstance(modulepath, list):
+        modulepath = modulepath[0]
+    try:
+        localedir = modulepath + os.sep + 'locale'
+        languages = locale.getdefaultlocale()
+        t = gettext.translation(domain, localedir, languages)
+        # define a short alias
+        return t.gettext
+    except:
+        print(sys.exc_info())
+        return lambda x: x
